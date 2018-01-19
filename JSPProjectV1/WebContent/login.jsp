@@ -1,5 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri = "http://java.sun.com/jsp/jstl/core" %>
+<c:if test = "${ not empty myuid }">
+	<c:redirect url = "logout.jsp" />
+</c:if>
+
 <!DOCTYPE html>
 <html lang="ko">
 	<head>
@@ -27,20 +32,10 @@
 		</style>
 	</head>
 	<body>
+	<jsp:include page="layout/header.jsp"/>
 	<div id="contents">
-		<header>
-			<h1>JSP 프로젝트 V1</h1>
-			<ul>
-				<li><a href="index.jsp">Home</a></li>
-				<li><a href="join.jsp">회원가입</a></li>
-				<li><a href="login.jsp">로그인</a></li>
-				<li><a href="list.jsp">게시판</a></li>
-				<li><a href="myinfo.jsp">회원정보</a></li>
-			</ul>
-			<hr>
-		</header>	<!-- 머릿글 -->
 		<h2>로그인</h2>
-		<form id="loginfrm">
+		<form id="loginfrm" method="post" action="loginok.jsp">
 				<div>
 					<label for="uid">아이디</label>
 					<input type="text" name="uid" id="uid"
@@ -53,13 +48,10 @@
 				</div>
 				<div>
 					<label></label>	
-					<buton type="submit">로그인</button>
+					<button type="submit">로그인</button>
 				</div>
 		</form>
 	</div>	<!-- 본문 -->
-	<footer>
-		<hr>
-		<p>coupyright&copy; 2018. fatalvirus<sup>&reg;</sup>. all rights reserved.</p>
-	</footer>	<!-- 꼬릿말 -->
+	<jsp:include page="layout/footer.jsp"/>
 	</body>
 </html>

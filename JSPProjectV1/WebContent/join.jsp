@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="ko">
 	<head>
@@ -9,7 +10,7 @@
 		<link href="./css/fatalvirus.css" rel="stylesheet">
 		<style>
 		#joinfrm {
-			width: 400px;
+			width: 600px;
 			margin: 0 auto;
 			/*border: 1px solid red;*/
 			padding-top: 100px;
@@ -17,7 +18,7 @@
 		#joinfrm label {
 			/*border: 1px solid blue;*/
 			display : inline-block;
-			width: 120px;
+			width: 220px;
 			text-align: right;
 			font-weight: bold;	
 		}
@@ -30,23 +31,14 @@
 		</style>
 	</head>
 	<body>
+		<jsp:include page="layout/header.jsp"/>
 	<div id="contents">
-		<header>
-			<h1>JSP 프로젝트 V1</h1>
-			<ul>
-				<li><a href="index.jsp">Home</a></li>
-				<li><a href="join.jsp">회원가입</a></li>
-				<li><a href="login.jsp">로그인</a></li>
-				<li><a href="list.jsp">게시판</a></li>
-				<li><a href="myinfo.jsp">회원정보</a></li>
-			</ul>
-			<hr>
-		</header>	<!-- 머릿글 -->
 		<h2>회원가입</h2>
-		<form id="joinfrm">
+		<form id="joinfrm" method="post" action="joinok.jsp">
 		<div>
 			<label for="uid">아이디</label>
 			<input type="text" name="uid" id="uid">
+			<span id = "umsg"></span>
 		</div>
 		<div>
 			<label for="pwd">비밀번호</label>
@@ -57,21 +49,21 @@
 			<input type="password" name="repwd" id = "repwd">
 		</div>
 		<div>
-			<label for="names">이름</label>
-			<input type="text" name="names" id = "names">
+			<label for="name">이름</label>
+			<input type="text" name="name" id = "name">
+		</div>
+		<div>
+			<label for="email">이메일</label>
+			<input type="text" name="email" id = "email">
 		</div>
 		<div>
 			<label></label>
-			<button type="submit">입력완료</button>
+			<button type="submit" id = "joinbtn">입력완료</button>
 			<button type="reset">다시입력</button>
 		</div>
 		</form>	<!-- 본문 -->
 	</div>
-		<footer>
-			<hr>
-			<p>coupyright&copy; 2018. fatalvirus<sup>&reg;</sup>. all rights reserved.</p>
-		</footer>	<!-- 꼬릿말 -->
-		
+		<jsp:include page="layout/footer.jsp"/>		
 		<script>
 			var joinfrm = document.getElementById("joinfrm");
 			joinfrm.onsubmit = checkjoin;	// 이벤트 등록
@@ -80,7 +72,8 @@
 			var uid = document.getElementById("uid");	// 아이디
 			var pwd = document.getElementById("pwd");	// 비밀번호
 			var repwd = document.getElementById("repwd");	// 비밀번호확인
-			var names = document.getElementById("names");	// 이름
+			var name = document.getElementById("name");	// 이름
+			var email = document.getElementById("email");	// 이름
 			
 			function checkjoin() {
 				if (uid.value == "") {
@@ -95,9 +88,9 @@
 				} else if (pwd.value != repwd.value) {
 					alert("비밀번호가 일치하지 않습니다!");
 					repwd.focus();
-				} else if (names.value == "") {
+				} else if (name.value == "") {
 					alert("이름을 입력하세요!");
-					names.focus();
+					name.focus();
 				} else {
 				return true;	// submit 기능 동작
 				}
@@ -105,6 +98,48 @@
 				
 			}
 		</script>
+		
+	<script>
+		function checkUserid() {
+			// 1. 
+			var ajax = new XMLHttpRequest();
+			// 2. 이벤트 처리 함수는 콜백방식으로 처리
+			ajax.onload = function() {
+				if (ajax.status == 200) {	// 정상처리시
+
+					var result = ajax.responseText.replace(/(\s*)/g, "");
+					// 빈칸을 공백으로 바꿈
+					
+					var isUsedID = false;
+					
+					if (result != "") isUsedID = true;
+					
+					if (isUsedID) {
+						umsg.innerHTML = "사용중인 아이디";
+						umsg.style.color = 'red';
+						joinbtn.disabled = true;
+					} else {
+						umsg.innerHTML = "사용가능 아이디"
+						umsg.style.color = 'blue';
+						joinbtn.disabled = false;
+					}
+				} else {	// 비정상처리시
+					alert('어쨌든 오류발생!');
+				}
+			};
+			// 3.
+			ajax.open("get", "checkuid.jsp?uid=" + uid.value, true);
+			ajax.send(null);
+		}
+		
+		// 회원가입 폼요소에 이벤트 추가하기
+		var uid = document.getElementById("uid");
+		var umsg = document.getElementById("umsg");	
+		var joinbtn = document.getElementById("joinbtn");	
+		
+		uid.addEventListener('blur', checkUserid);
+		
+	</script>
 		
 	</body>
 </html>
